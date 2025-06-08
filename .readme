@@ -1,0 +1,2 @@
+ npm i bcrypt cors dotenv express mongoose nodemailer jsonwebtoken
+ npm install inngest
