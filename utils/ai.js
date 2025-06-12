@@ -1,5 +1,4 @@
 import { createAgent, gemini } from "@inngest/agent-kit";
-
 const analyzeTicket = async (ticket) => {
   const supportAgent = createAgent({
     model: gemini({
@@ -8,7 +7,6 @@ const analyzeTicket = async (ticket) => {
     }),
     name: "AI Ticket Triage Assistant",
     system: `You are an expert AI assistant that processes technical support tickets. 
-
 Your job is to:
 1. Summarize the issue.
 2. Estimate its priority.
@@ -22,7 +20,6 @@ IMPORTANT:
 
 Repeat: Do not wrap your output in markdown or code fences.`,
   });
-
   const response =
     await supportAgent.run(`You are a ticket triage agent. Only return a strict JSON object with no extra text, headers, or markdown.
         
@@ -50,15 +47,13 @@ Ticket information:
 - Description: ${ticket.description}`);
 
   const raw = response.output[0].context;
-
   try {
     const match = raw.match(/```json\s*([\s\S]*?)\s*```/i);
     const jsonString = match ? match[1] : raw.trim();
     return JSON.parse(jsonString);
   } catch (e) {
     console.log("Failed to parse JSON from AI response" + e.message);
-    return null; // watch out for this
+    return null; 
   }
 };
-
 export default analyzeTicket;
