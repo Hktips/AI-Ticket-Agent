@@ -1,11 +1,27 @@
-import express from 'express';
-import cors from 'cors';
-import mongoose from 'mongoose';
-import {userRoute} from "./router/user.js";
-const app = express()
-app.use(express.json())
-app.use(cors())
-app.use("/api/auth,userRoute")
+import express from "express";
+import mongoose from "mongoose";
+import cors from "cors";
+import { serve } from "inngest/express";
+import userRoutes from "./routes/user.js";
+import ticketRoutes from "./routes/ticket.js";
+import { inngest } from "./inngest/client.js";
+import { onUserSignup } from "./inngest/functions/on-signup.js";
+import { onTicketCreated } from "./inngest/functions/on-ticket-create.js";
+import dotenv from "dotenv";
+dotenv.config();
+const PORT = process.env.PORT || 3000;
+const app = express();
+app.use(cors());
+app.use(express.json());
+app.use("/api/auth", userRoutes);
+app.use("/api/tickets", ticketRoutes);
+app.use(
+  "/api/inngest",
+  serve({
+    client: inngest,
+    functions: [onUserSignup, onTicketCreated],
+  })
+);
 mongoose.connect('process.env.MONGO_URI')
     .then(() => {
         console.log('Connected to MongoDB');
@@ -13,5 +29,5 @@ mongoose.connect('process.env.MONGO_URI')
             console.log('Server is running on port 3000');
         }).catch((err) => {
             console.error('Error connecting to MongoDB:', err);
-        })
     })
+})
